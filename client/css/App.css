@@ -1,0 +1,64 @@
+html, body, #root{
+    height: 100%;
+}
+
+.MainPage{
+    height: 100%;
+}
+
+section{
+    background: linear-gradient(sienna, peru);
+    border-radius: 1em;
+    display: flex;
+    width: 100%;
+    height: 100em;
+    background-color: white; 
+    font-size: large;
+}
+
+section div{
+    margin: 0.5em 0.5em 0.5em 0.5em;
+}
+
+input{
+    border-radius: 0.5em;
+}
+
+.Logo{
+	width: 5em;
+}
+
+section input, .BarreRecherche input{
+        height: 3em;
+        width: 100%;
+        border-radius: 0.5em;
+        margin-left: 2px;
+        margin-right: 2px;
+        padding-left: 10px;
+        padding-right: 10px;
+}
+section>div{
+        border: 3px grey solid;
+        padding: 1em;
+        border-radius: 0.5em;
+        background-color: whitesmoke;
+}
+
+.Stats{
+        width: 40%;
+        text-align: center;
+}
+
+.Button{
+    height: 70%;
+    font: bold 11px Arial;
+    text-decoration: none;
+    background-color: #EEEEEE;
+    color: #333333;
+    padding: 2px 6px 2px 6px;
+    border: 1px solid grey;
+}
+
+.Button:active{
+    box-shadow: 1px 1px 1px #555 inset;
+}
