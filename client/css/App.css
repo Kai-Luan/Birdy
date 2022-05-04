@@ -1,5 +1,6 @@
 html, body, #root{
     height: 100%;
+    margin: 0;
 }
 
 .MainPage{
@@ -29,24 +30,30 @@ input{
 }
 
 section input, .BarreRecherche input{
-        height: 3em;
-        width: 100%;
-        border-radius: 0.5em;
-        margin-left: 2px;
-        margin-right: 2px;
-        padding-left: 10px;
-        padding-right: 10px;
+	height: 3em;
+	width: 100%;
+	border-radius: 0.5em;
+	margin-left: 2px;
+	margin-right: 2px;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 section>div{
-        border: 3px grey solid;
-        padding: 1em;
-        border-radius: 0.5em;
-        background-color: whitesmoke;
+	border: 3px grey solid;
+	padding: 1em;
+	border-radius: 0.5em;
+	background-color: whitesmoke;
 }
 
 .Stats{
-        width: 40%;
-        text-align: center;
+    position: relative;
+    width: 40%;
+    text-align: center;
+    font-size: x-large;
+}
+.StatsNumber{
+    text-align: left;
+    font-size: large;
 }
 
 .Button{
@@ -62,3 +69,4 @@ section>div{
 .Button:active{
     box-shadow: 1px 1px 1px #555 inset;
 }
+

@@ -1,6 +1,8 @@
 import React, {useState } from 'react';
+import {api} from './Utils'
 
-const Register = ({register}) => {
+// Page d'inscription
+const Register = () => {
     const [nom, setNom] = useState('')
     const [prenom, setPrenom] = useState('')
     const [login, setLogin] = useState('')
@@ -8,7 +10,7 @@ const Register = ({register}) => {
     const [confirm, setConfirm] = useState('')
     const [text, setText] = useState('')
     const [success, setSucces] = useState(false)
-
+    // Confirme l'inscription
     async function submit(){
         let m = ''
         let s = false
@@ -24,6 +26,19 @@ const Register = ({register}) => {
         }
         setSucces(s)
         setText(m)
+    }
+    // Demande au serveur, la création d'un nouveau user
+    function register(login, password, nom, prenom){
+        return new Promise(resolve =>{
+            api.put('api/user', 
+                {login: login, password: password, firstname: prenom, lastname: nom}
+            ).then((response) => {
+                resolve()
+            })
+            .catch((error) => {
+                resolve(error.response.data.message)
+            })
+         });
     }
 
     return (<div className="Register">    

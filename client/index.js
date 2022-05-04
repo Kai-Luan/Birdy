@@ -2,6 +2,13 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import { MainPage } from './Composant/MainPage';
 
+// Importation des fichiers CSS
+import './css/NavigationPanel.css';
+import './css/App.css';
+import './css/Message.css';
+import './css/Utils.css';
+import './css/Profile.css'
+
 
 const App = () => {
 	return (
