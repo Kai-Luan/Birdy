@@ -27,10 +27,8 @@ db.messages = new Datastore(inMemoryOnly=true);
 
 app.use(cors({
     credentials: true,
-    origin:true
+    origin: true
   }))
-
-  
 app.use('/api', api.default(db));
 app.use('/apimessages', apimessages.default(db));
 app.use('/apifriends', apifriends.default(db));
@@ -84,6 +82,13 @@ g().then(docs => {
     date: new Date(),
     text: "Hello",
    };
+
+  const m3 = {
+    author_id: docs[2]._id,
+    author_name: "pokeball",
+    date: new Date(),
+    text: "Catch them all"
+   };
   
   const f1 = {
     userid: docs[0]._id,
@@ -99,10 +104,10 @@ g().then(docs => {
    };
    const f3 = {
     userid: docs[1]._id,
-    username: "sasha",
+    username: "Sasha",
     friend_id: docs[2]._id,
-    friendname: "pokeball",
-   };
+    friendname: "Pokeball"
+   }
    // Messages
    db.messages.insert([m1, m2], function (err, newDoc){
     // Do nothing
@@ -121,4 +126,3 @@ g().then(docs => {
 app.on('close', () => {
 });
 exports.default = app;
-

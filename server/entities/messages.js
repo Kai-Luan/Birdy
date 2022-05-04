@@ -1,5 +1,6 @@
 const { response } = require("express");
 const { resolve } = require("path");
+const { chain } = require("underscore");
 
 // Classe qui manipule la collection messages de la BD
 class Messages {
@@ -48,6 +49,7 @@ class Messages {
 	getListMessageFromAllFriend(friends) {
 		return new Promise((resolve, reject) => {
 		this.db.messages.find({author_id: { $in: friends}}, function (err, docs){
+			if (err) resolve()
 			resolve(docs)
 		})
 		});
@@ -56,8 +58,8 @@ class Messages {
   	// Modifie un message prexistant
 	setMessage(userid, name, date, new_message, old_message){
 		return new Promise((resolve, reject) => {
-			this.db.messages.update({author_id:userid, date:date, text:old_message}, {author_id:userid, author_name:name, date:date, text:new_message}, function (err, docs){
-				resolve(docs)
+			this.db.messages.update({author_id:userid, date:date, text:old_message}, {author_id:userid, author_name:name, date:date, text:new_message}, function (err, doc){
+				resolve(doc)
 			})
 		});
 	}
@@ -65,12 +67,47 @@ class Messages {
   	// Supprime un message de la BD
 	removeMessage(message_id){
 		return new Promise((resolve, reject) => {
-			this.db.messages.remove({_id: message_id}, function (err, docs){
+			this.db.messages.remove({_id: message_id}, function (err, doc){
 				if (err) resolve()
-				resolve(1)
+				resolve(doc)
 			})
 		});
 	}
-	}
-exports.default = Messages;
 
+	// Recherche les messages selon les mots clés
+	getFilteredListMessage(keywords, friends=undefined){
+		return new Promise((resolve, reject) => {
+			var query = {}
+			if (keywords.length!=0){
+				console.log("\tKeywords: ", keywords)
+				var chaine = keywords.map(s => "(?=.*?\\b"+s+"\\b)")
+				console.log("\tChaine: ", chaine)
+				query.text = new RegExp('^' + chaine.join(""))
+			} 
+			if (friends) query.author_id = {$in: friends}
+			console.log("\tQuery: ", query)
+			this.db.messages.find(query, function (err, docs){
+				if (err) resolve()
+				else resolve(docs)
+			})
+		});
+	}
+	// Retourne le nombre de messages d'un user dans la BD
+	getInfoMessageUser(userid){
+		return new Promise((resolve, reject)=>{
+		  	this.db.messages.count({author_id: userid},function(err,val){
+			  	resolve(val)
+			  })
+		  });
+	  }
+
+	// Retourne le nombre de messages dans la BD
+	getInfoAllMessage(){
+		return new Promise((resolve, reject)=>{
+			this.db.messages.count({},function(err,val){
+				resolve(val)
+			})
+		});
+	}
+}
+exports.default = Messages;

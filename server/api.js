@@ -17,6 +17,7 @@ function init(db) {
         next();
     });
     const users = new Users.default(db);
+    //Login
     router.post("/user/login", async (req, res) => {
         try {
             const { login, password } = req.body;
@@ -76,8 +77,8 @@ function init(db) {
             });
         }
     });
-
     router
+    // Logout
         .route("/user/logout")
         .delete((req, res) => {
         req.session.destroy((err) => { 
@@ -95,23 +96,47 @@ function init(db) {
             }
         });
     })
-
-    router
-        .route("/user/:user_id(\\d+)")
-        .get(async (req, res) => {
-        try {
-            const user = await users.get(req.params.user_id);
-            if (!user)
-                res.sendStatus(404);
-            else
-                res.send(user);
+    router.get("/user/infos", async (req,res)=>{
+        try{
+            console.log("1")
+            const v = await users.getUserInfo();
+            console.log("1")
+            if (!v) res.status(500).send("Erreur Interne");
+            res.status(200).json({
+                status: 200,
+                count: v
+            });
         }
         catch (e) {
             res.status(500).send(e);
         }
     })
-        .delete((req, res, next) => res.send(`delete user ${req.params.user_id}`));
-
+    router
+    .route("/user/:user_id")
+    // Get User
+        .get(async (req, res) => {
+        try {
+            const user = await users.get(req.params.user_id);
+            if (!user) res.sendStatus(404);
+            else res.send(user);
+        }
+        catch (e) {
+            res.status(500).send(e);
+        }
+    })
+    // Delete User
+    .delete((req, res, next) => {
+        if (!req.session.userid){
+            res.status(401).json({
+                status: 401,
+                message: "Permission denied: user not connected"
+            });
+            return;
+        }
+        users.deleteUser(req.session.userid)
+        res.send(`delete user ${req.session.userid}`)
+    });
+    // Create User
     router.put("/user", (req, res) => {
         const { login, password, lastname, firstname } = req.body;
         if (!login || !password || !lastname || !firstname) {

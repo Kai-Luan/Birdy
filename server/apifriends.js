@@ -10,56 +10,15 @@ function init(db) {
     // simple logger for this router's requests
     // all requests to this router will first hit this middleware
     router.use((req, res, next) => {
-        console.log('API: method %s, path %s', req.method, req.path);
+        console.log('APIFRIENDS: method %s, path %s', req.method, req.path);
         console.log('Body', req.body);
         next();
     });
-    const messages = new Messages.default(db);
     const users = new Users.default(db);
     const friends = new Friends.default(db);
-    // Create Message
     router
-        .route("/user/:user_id/friends")
-        .post(async (req, res) => {
-        try {
-            if (!req.session.userid){
-                res.status(401).json({
-                    status: 401,
-                    message: "Permission denied: user not connected"
-                });
-                return;
-            }
-            const friend = await users.get(req.params.user_id)
-            if(! await friend) {
-                res.status(401).json({
-                    status: 401,
-                    message: "Utilisateur inconnu"
-                });
-                return;
-            }
-            if (req.session.userid === friend._id){
-                res.status(401).json({
-                    status: 401,
-                    message: "On ne peut pas se suivre soi-même"
-                });
-                return;
-            }
-            // On stocke le message dans la base de donnnées
-            const userid = await friends.create(req.session.userid, req.session.username, friend._id, friend.username);
-            if (!userid) res.status(500).send("erreur interne");
-            else{
-                res.status(200).json({
-                    status: 200,
-                    "id": userid
-                });
-            }
-        }
-        catch (e) {
-            res.status(500).send(e);
-        }
-    })
-        // Get Friend list from userid
-        .get(async (req, res) => {
+        // Get FriendList from userid
+        .get("/user/:user_id/friends", async (req, res) => {
         try {
             if (!req.session.userid){
                 res.status(401).json({
@@ -81,9 +40,11 @@ function init(db) {
         catch (e) {
             res.status(500).send(e);
         }
-    })
-
-    router.delete("/user/:user_id/friends/:friendid", async (req, res) => {
+    });
+    // DELETE Friend relationship
+    router
+    .route("/user/:user_id/friends/:friendid")
+    .delete(async (req, res) => {
         try {
             if (!req.session.userid){
                 res.status(401).json({
@@ -125,7 +86,60 @@ function init(db) {
         catch (e) {
             res.status(500).send(e);
         }
+    })
+    // Create Friend Relationship
+    .post(async (req, res) => {
+        try {
+            if (!req.session.userid){
+                res.status(401).json({
+                    status: 401,
+                    message: "Permission denied: user not connected"
+                });
+                return;
+            }
+            if (req.session.userid === req.params.friendid){
+                res.status(401).json({
+                    status: 401,
+                    message: "On ne peut pas se suivre soi-même"
+                });
+                return;
+            }
+
+            const friend = await users.get(req.params.friendid)
+            if(! friend) {
+                res.status(401).json({
+                    status: 401,
+                    message: "Utilisateur inconnu"
+                });
+                return;
+            }
+            // On stocke le message dans la base de donnnées
+            const userid = await friends.create(req.session.userid, req.session.username, friend._id, friend.login);
+            if (!userid) res.status(500).send("erreur interne");
+            else{
+                res.status(200).json({
+                    status: 200,
+                    "id": userid
+                });
+            }
+        }
+        catch (e) {
+            res.status(500).send(e);
+        }
     });
+    // Get Friend Info
+    router.get("/user/:userid/infos", async (req,res)=>{
+        try{
+            const v = await friends.getFriendInfo(req.params.userid);
+            if (!v) res.status(500).send("Erreur Interne");
+            res.status(200).json({
+                status: 200,
+                count: v
+            });
+        }
+        catch (e) {
+            res.status(500).send(e);
+        }})
     return router;
 }
 exports.default = init;
